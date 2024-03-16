@@ -1,15 +1,21 @@
 import { useState } from "react";
+import Logo from "../assets/img/download.jpeg"
+import { Link } from "react-router-dom";
 
 // const loggedIn = ()=>{
 //   //API check
 //   return log;
 // }
+
+//SPA:Single Page Application
+//Client Side Routing
+
 const Title =()=> (
   <a href="/">
     <img
       className="logo" 
       alt="logo" 
-      src="https://lh3.googleusercontent.com/p/AF1QipO_6cTc3QdC9L2vAOyCkUPG-G-9YeFxo3YiDu3R=w1080-h608-p-no-v0"
+      src={Logo}
       />
   </a>
 );
@@ -21,9 +27,9 @@ const Header = () => {
       <Title/>
       <div className="nav-items">
         <ul>
-          <li>Home</li>
-          <li>About</li>
-          <li>Contact</li>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/about">About</Link></li>
+          <li><Link to="/contact">Contact</Link></li>
           <li>Cart</li>
         </ul>
       </div>
