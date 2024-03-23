@@ -98,7 +98,7 @@ Tree Shaking- Removing un-wanted
 //Dynamic Import
 
 
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import Header from "./components/Header";
 import Body from "./components/Body";
@@ -110,19 +110,37 @@ import Contact from "./components/Contact";
 import RestaurantMenu from "./components/RestaurantMenu";
 import Profile from "./components/Profile";
 import Shimmer from "./components/Shimmer";
+import UserContext from "./utils/UserContext";
+import { Provider } from "react-redux";
+import appStore from "./utils/appStore";
+import Cart from "./components/Cart";
+
 // import Instamart from "./components/Instamart";
 
 const Instamart=lazy(()=>import("./components/Instamart"));
 //Upon On Demand Loading -->> upon render --> suspend loading
 
 const AppLayout = () => {
+
+  const [userName,setUserName]=useState();
+  useEffect(()=>{
+    //API
+    const data={
+      name:"Karma",
+    };
+    setUserName(data.name);
+  },[])
   return (
-    <>
-      <Header />
-      {/*{Outlet} */}
-      <Outlet/>
-      <Footer />
-    </>
+    <Provider store={appStore}>
+      <UserContext.Provider value={{loggedInUser:userName,setUserName}}>
+        <>
+        <Header />
+        {/*{Outlet} */}
+        <Outlet/>
+        <Footer />
+        </>
+      </UserContext.Provider>
+    </Provider>
   );
 };
 
@@ -135,6 +153,10 @@ const appRouter=createBrowserRouter([
       {
         path:"/",
         element:<Body/>,
+      },
+      {
+        path:"/cart",
+        element:<Cart/>,
       },
       {
         path:"/about",

@@ -5,6 +5,9 @@ import  Shimmer  from "./Shimmer";
 import useRestaurant from "../utils/useRestaurant";
 import RestaurantCategory from "./RestaurantCategory";
 
+//props drilling->avoid props drilling
+//React Context
+
 const RestaurantMenu=()=>{
   const {id}=useParams();
   // console.log(params);
@@ -12,6 +15,7 @@ const RestaurantMenu=()=>{
   const restaurantInfo=useRestaurant(id);
   // console.log(restaurantInfo);
   const [showIndex,setShowIndex]=useState(null);
+  const [showItems,setShowItems]=useState(true);
 
   if(restaurantInfo===null) return <Shimmer/>;
   const {name, cloudinaryImageId, areaName, city, avgRating, costForTwoMessage, cuisines}=restaurantInfo?.cards[0]?.card?.card?.info;
@@ -33,8 +37,10 @@ const RestaurantMenu=()=>{
         {categories.map((category,index)=>
           //controlled component
           <RestaurantCategory data={category?.card?.card} key={category.card.card.title} 
-          showItems={index===showIndex&&true}
-          setShowIndex={()=>setShowIndex(index)}/>
+          showItems={index===showIndex&&showItems}
+          setShowIndex={()=>setShowIndex(index)}
+          setShowItems={()=>setShowItems(index===showIndex&&showItems?false:true)}
+          />
         )}
       </div>
       {/* <div>

@@ -1,9 +1,10 @@
 import RestaurantCard, { withPromotedLabel } from "./RestaurantCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Shimmer from "./Shimmer";
 import { Link } from "react-router-dom";
 import { filterData } from "../utils/helper";
 import useOnline from "../utils/useOnline";
+import UserContext from "../utils/UserContext";
 
 const Body = () => {
   // const searchTxt="KFC";
@@ -12,10 +13,11 @@ const Body = () => {
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [allRestaurants, setAllRestaurants] = useState([]);
 
-  const RestaurantCardPromoted=withPromotedLabel(RestaurantCard);
+  const RestaurantCardPromoted = withPromotedLabel(RestaurantCard);
 
   //empty dependency array=>once after render
   //dep array [searchText]=>once after initial render+everytime after render(searchText chnges)
+
   useEffect(() => {
     //API call
     // fetch()
@@ -36,11 +38,10 @@ const Body = () => {
     );
   }
 
-  const isOnline=useOnline();
-  if(!isOnline){
-    return <h1>Seems like you are offline</h1>
-  };
-
+  const isOnline = useOnline();
+  if (!isOnline) {
+    return <h1 className="font-bold text-lg">Seems like you are offline</h1>;
+  }
 
   //Conditional Rendering
   //if restaurant is empty=>shimmer Ui
@@ -48,44 +49,62 @@ const Body = () => {
   if (!allRestaurants) return null;
   // if(filteredRestaurants.length===0) return <h1>No result found!!</h1>
 
+  const { setUserName, loggedInUser } = useContext(UserContext);
   return allRestaurants?.length === 0 ? (
     <Shimmer />
   ) : (
     <>
-      <div className="p-5 bg-pink-50 my-5">
-        <input
-          type="text"
-          className="focus:bg-gray-100"
-          placeholder="Search"
-          value={searchText}
-          onChange={(e) => {
-            setSearchText(e.target.value);
-          }}
-        />
-        <button
-          className="p-2 m-2 bg-purple-700 text-white rounded-lg hover:bg-purple-200"
-          onClick={() => {
-            const data = filterData(searchText, allRestaurants);
-            setFilteredRestaurants(data);
-          }}
-        >
-          Search
-        </button>
+      <div className="p-5 bg-pink-50 my-5 flex">
+        <div>
+          <input
+            type="text"
+            className="focus:bg-gray-100"
+            placeholder="Search"
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+          />
+          <button
+            className="p-2 m-2 bg-purple-700 text-white rounded-lg hover:bg-purple-200"
+            onClick={() => {
+              const data = filterData(searchText, allRestaurants);
+              setFilteredRestaurants(data);
+            }}
+          >
+            Search
+          </button>
+        </div>
+        <div className="my-auto mx-auto">
+          <label className="m-5">UserName:</label>
+          <input
+            className="border border-black p-2"
+            value={loggedInUser}
+            onChange={(e) => {
+              setUserName(e.target.value);
+            }}
+          />
+        </div>
       </div>
       <div className="flex flex-wrap">
-        {!filteredRestaurants.length?<h1>No Results Found</h1>:filteredRestaurants.map((restaurant) => {
-          return (
-            <Link 
-            key={restaurant?.info?.id}
-            to={"/restaurant/"+restaurant?.info?.id}>
-              {
-              restaurant?.info?.avgRating>4.3?(<RestaurantCardPromoted {...restaurant.info} />
-              ):
-              (<RestaurantCard {...restaurant.info} />
-              )}
-            </Link>
-          );
-        })}
+        {!filteredRestaurants.length ? (
+          <h1>No Results Found</h1>
+        ) : (
+          filteredRestaurants.map((restaurant) => {
+            return (
+              <Link
+                key={restaurant?.info?.id}
+                to={"/restaurant/" + restaurant?.info?.id}
+              >
+                {restaurant?.info?.avgRating > 4.3 ? (
+                  <RestaurantCardPromoted {...restaurant.info} />
+                ) : (
+                  <RestaurantCard {...restaurant.info} />
+                )}
+              </Link>
+            );
+          })
+        )}
       </div>
     </>
   );
